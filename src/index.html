@@ -6,6 +6,7 @@
   <title></title>
 
   <link rel="stylesheet" href="css/markdowneditor.css">
+  <script src="js/render.js"></script>
 </head>
 
 <body>
@@ -15,37 +16,46 @@
 </div>
 <!--<textarea id="editor"></textarea>-->
 <div id="preview"></div>
-<script>
-  function render(){
-    let html = '';
-    const editor = document.getElementById('editor');
-    const preview = document.getElementById('preview');
-    const markdownArr = editor.innerText.split('\n');
-    for(let i=0; i<=markdownArr.length; i++){
-      html = html + header(markdownArr[i]);
-    }
 
-    preview.innerHTML = html;
-    console.log(markdownArr);
-  }
-  document.addEventListener('keydown', (e) => {
+<script>
+  // function render(){
+  //   let html = '';
+  //   const editor = document.getElementById('editor');
+  //   const preview = document.getElementById('preview');
+  //   const markdownArr = editor.innerText.split('\n');
+  //   for(let i=0; i<=markdownArr.length-1; i++){
+  //
+  //     // if(markdownArr[i] = ''){
+  //     //   markdownArr.splice(i,1);
+  //     // }
+  //     html = html + header(markdownArr[i]);
+  //   }
+  //
+  //   preview.innerHTML = html;
+  //   console.log(markdownArr);
+  // }
+  const editor = document.getElementById('editor').innerText;
+
+  let preview = document.getElementById('preview').innerHTML;
+  let render = new Render(editor);
+  document.addEventListener('keypress', (e) => {
     e = e || window.event;
     if(e.key = '13'){
-     render();
+      preview = render.render().join('');
     }
   });
-  function header(mdtext) {
-    let htmltext;
-    const pattern = /^(#){1,6}\s/g;
-    if(pattern.test(mdtext)){
-      const content = mdtext.replace(pattern, '');
-      const hlevel = pattern.exec(mdtext)[0].length;
-      htmltext = '<h' + hlevel + '>' + content + '</h' + hlevel + '>';
-    }else{
-      htmltext = '';
-    }
-    return htmltext;
-  }
+  // function header(mdtext) {
+  //   let htmltext;
+  //   const pattern = /^(#){1,6}\s/g;
+  //   if(pattern.test(mdtext)){
+  //     const content = mdtext.replace(pattern, '');
+  //     const hlevel = pattern.exec(mdtext)[0].length;
+  //     htmltext = '<h' + hlevel + '>' + content + '</h' + hlevel + '>';
+  //   }else{
+  //     htmltext = '<p>' + mdtext + '</p>';
+  //   }
+  //   return htmltext;
+  // }
 
 
 
@@ -53,6 +63,7 @@
   // '# animal\n## dog\n### little dog\n#### little little dog\n## cat\n### little cat\n## mouse\n### little mouse'
   // document.getElementById('preview').innerHTML = html;
 </script>
+
 </body>
 
 </html>
