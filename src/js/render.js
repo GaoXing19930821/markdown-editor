@@ -27,10 +27,12 @@ class Render{
   inlinerender(){
     let output = [] , content;
 
-    let str = "**Marked** - Markdown Parser\n========================\n[Marked] lets you convert [Markdown] into HTML. Markdown is a simple text format whose goal is to be very easy to read and write, even when not converted to HTML. This demo page will let you type anything you like and see how it gets converted.  Live.  No more waiting around.";
-    let mdArr = str.split("\n");
+    //let str = "**Marked** - **down**  **Markdown** Markdown Parser\n========================\n[Marked] lets you convert [Markdown] into HTML. Markdown is a simple text format whose goal is to be very easy to read and write, even when not converted to HTML. This demo page will let you type anything you like and see how it gets converted.  Live.  No more waiting around.";
+    //let mdArr = str.split("\n");
+
+    const mdArr = this.markdownArr;
     console.log(mdArr);
-    // const mdArr = this.markdownArr;
+
     for(let i=0;i<=mdArr.length-1;i++){
       if(filter.inline.bold.test(mdArr[i])){
         content = this.addInlineLabel(filter.inline.bold,mdArr[i],'strong');
@@ -40,12 +42,15 @@ class Render{
       }
       else if(filter.inline.code.test(mdArr[i])){
         content = this.addInlineLabel(filter.inline.code,mdArr[i],'code');
-      }else{
+      }else if(filter.inline.deleteline.test(mdArr[i])){
+        content = this.addInlineLabel(filter.inline.deleteline,mdArr[i],'s')
+      }
+
+      else{
         content = mdArr[i];
       }
       output.push(content);
     }
-
     return output;
   };
   render(){
@@ -56,27 +61,35 @@ class Render{
       content = '<p>'+ inlineArr[i] + '</p>\n';
       output.push(content);
     }
-
+    console.log(output);
     return output;
   }
 
   addInlineLabel(reg,content,label){
     let result = '';
     let addlabel = [];
+    let rest = [];
     const match = content.match(reg);
     for(let i=0;i<=match.length-1;i++){
-      let labelplus = '<' + label + '>' + reg.exec(match[i])[1] + '</' + label + '>';
+      let labelplus = '<' + label + '>' + /(?:\*|_){2}(.+?)(?:\*|_){2}/g.exec(match[i])[1] + '</' + label + '>';
      addlabel.push(labelplus);
     }
-
-    console.log(rest);
+    addlabel.push('');
+    for(let i=0;i<content.split(reg).length;i++){
+      if(i % 2 == 0){
+        rest.push(content.split(reg)[i]);
+      }
+    }
     for(let i=0;i<=rest.length-1;i++){
      result = result + rest[i] + addlabel[i];
-     console.log(result)
     }
+    console.log(result)
     return result;
   }
+
+
+
   getArray(){
-    return this.markdown.split('\n');
+    return this.markdown.split("\n");
   }
 }
