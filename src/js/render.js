@@ -69,7 +69,6 @@ class Render{
      addlabel.push(labelplus);
     }
 
-    const rest = content.split(/(?:\*|_){2}(.+?)(?:\*|_){2}/g);
     console.log(rest);
     for(let i=0;i<=rest.length-1;i++){
      result = result + rest[i] + addlabel[i];
