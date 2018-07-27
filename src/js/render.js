@@ -1,20 +1,25 @@
 const filter = {
-  inline : {
     bold : /(?:\*|_){2}(.+?)(?:\*|_){2}/g,
     italic: /(?:\*|_){1}(.+?)(?:\*|_){1}/g,
     bolditalic: /()/g ,
-    code: /(?:`)(.+?)(?:`)/g,
-    image: /(?:!\[(.+?)\])(?:\((.+?)\))/g,
+    code: /(?:`)([^`]+)(?:`)/g,
+    image: /(?:!\[(.+?)*\])(?:\((.+?)*("(.+?)")\))/g,
     link: /(?:\[(.+?)\])(?:\((.+?)\))/g,
     deleteline: /(?:~~)(.+?)(?:~~)/g,
-  },
-  block : {
-    header: /^(#){1,6}\s/g,
-    quote: /^(>)\s/g,
-    code: /^`{3}(?:\s|\n)/g,
+    header: /^(#{1,6})\s(.+)/,
+    quote: /^(>)\s(.+)/,
+    blockcode: /^`{3}(.+)*/g,
 
-  }
 };
+
+const fullfilter = {
+    bold : /(?:\*|_){2}.+?(?:\*|_){2}/g,
+    italic: /(?:\*|_){1}.+?(?:\*|_){1}/g,
+    code: /(?:`).+?(?:`)/g,
+    image: /!\[.+?\]\(.+?\)/g,
+    deleteline: /(?:~~).+?(?:~~)/g,
+
+}
 
 
 
@@ -25,27 +30,19 @@ class Render{
     this.inline = this.inlinerender();
   }
   inlinerender(){
-    let output = [] , content;
-
-    //let str = "**Marked** - **down**  **Markdown** Markdown Parser\n========================\n[Marked] lets you convert [Markdown] into HTML. Markdown is a simple text format whose goal is to be very easy to read and write, even when not converted to HTML. This demo page will let you type anything you like and see how it gets converted.  Live.  No more waiting around.";
-    //let mdArr = str.split("\n");
+    let output = [] , content, href, blod, italtic, code, deleteline;
 
     const mdArr = this.markdownArr;
-    console.log(mdArr);
-
+    //console.log(mdArr);
     for(let i=0;i<=mdArr.length-1;i++){
-      if(filter.inline.bold.test(mdArr[i])){
-        content = this.addInlineLabel(filter.inline.bold,mdArr[i],'strong');
+      if(filter.bold.test(mdArr[i])||filter.italic.test(mdArr[i])||
+        filter.code.test(mdArr[i])||filter.deleteline.test(mdArr[i])){
+        blod = this.getBold(mdArr[i]);
+        italtic = this.getItalic(blod);
+        code = this.getCode(italtic);
+        deleteline = this.getDeleteLine(code);
+        content = deleteline;
       }
-      else if(filter.inline.italic.test(mdArr[i])){
-        content = this.addInlineLabel(filter.inline.italic,mdArr[i],'em');
-      }
-      else if(filter.inline.code.test(mdArr[i])){
-        content = this.addInlineLabel(filter.inline.code,mdArr[i],'code');
-      }else if(filter.inline.deleteline.test(mdArr[i])){
-        content = this.addInlineLabel(filter.inline.deleteline,mdArr[i],'s')
-      }
-
       else{
         content = mdArr[i];
       }
@@ -58,38 +55,116 @@ class Render{
     let output = [] ,content;
     const inlineArr = this.inline;
     for(let i=0;i<inlineArr.length;i++){
-      content = '<p>'+ inlineArr[i] + '</p>\n';
+      if(filter.header.test(inlineArr[i])){
+        filter.header.lastIndex = 0;
+        let hlevel = filter.header.exec(inlineArr[i])[1].length;
+        let text = filter.header.exec(inlineArr[i])[2];
+        content = '<h' + hlevel + '>' + text + '</h' + hlevel + '>';
+      }
+      else if(filter.quote.test(inlineArr[i])){
+        let quote = [], text = '';
+        while(filter.quote.test(inlineArr[i])){
+          quote.push(inlineArr[i]);
+          i++;
+        }
+        for(let i=0;i<=quote.length-1;i++){
+          text = text + filter.quote.exec(quote[i])[2] + '</br>';
+        }
+        content = '<blockquote><p>' + text + '</p></blockquote>';
+      }
+      // else if(filter.blockcode.test(inlineArr[i])) {
+      //   let blockcode = [], language, text = '';
+      //   blockcode.push(inlineArr[i]);
+      //   i++;
+      //   while (!filter.blockcode.test(inlineArr[i])){
+      //     blockcode.push(inlineArr[i]);
+      //     i++;
+      //   }
+      //   console.log(blockcode);
+      //   // if(language = filter.blockcode.exec(blockcode[0])[1])
+      //   // language = filter.blockcode.exec(blockcode[0])[1];
+      //   for (let i = 1; i <= blockcode.length - 2; i++) {
+      //     text = text + blockcode[i] + '\n';
+      //   }
+      //   content = '<pre class="hljs language-' + '"><code>' + text + '</code></pre>';
+      // }
+      else{
+        content = '<p>' + inlineArr[i] + '</p>'
+      }
       output.push(content);
     }
     console.log(output);
     return output;
   }
-
-  addInlineLabel(reg,content,label){
-    let result = '';
-    let addlabel = [];
-    let rest = [];
-    const match = content.match(reg);
-    for(let i=0;i<=match.length-1;i++){
-      let labelplus = '<' + label + '>' + /(?:\*|_){2}(.+?)(?:\*|_){2}/g.exec(match[i])[1] + '</' + label + '>';
-     addlabel.push(labelplus);
+  getItalic(text){
+    if(filter.italic.test(text)){
+      return this.addInlineLabel(filter.italic,fullfilter.italic,text,'em');
+    }else{
+      return text;
     }
-    addlabel.push('');
-    for(let i=0;i<content.split(reg).length;i++){
-      if(i % 2 == 0){
-        rest.push(content.split(reg)[i]);
+  }
+  getBold(text){
+    if(filter.bold.test(text)){
+      return this.addInlineLabel(filter.bold,fullfilter.bold,text,'strong');
+    }else{
+      return text;
+    }
+  }
+  getCode(text){
+    if(filter.code.test(text)){
+      return this.addInlineLabel(filter.code,fullfilter.code,text,'code');
+    }else{
+      return text;
+    }
+  }
+  getDeleteLine(text){
+    if(filter.deleteline.test(text)){
+      return this.addInlineLabel(filter.deleteline,fullfilter.deleteline,text,'del')
+    }else{
+      return text;
+    }
+  }
+  getImage(text){
+    if(filter.image.test(text)){
+      const reg = filter.image;
+      const match = text.match(filter.image);
+      const rest = text.split(fullfilter.image);
+      let addlabel = [];
+      for(let i=0;i<=match.length-1;i++){
+        reg.lastIndex = 0;
+        let alt = reg.exec(match[i])[1];
+        let src = reg.exec(match[i])[2];
+        let title = reg.exec(match[i])[3];
+        let labelhref = '<img src="' + src + '" alt="' + alt + '" title="' + title + '"/>';
+        addlabel.push(labelhref);
       }
+      content = this.getConnect(addlabel,rest);
     }
-    for(let i=0;i<=rest.length-1;i++){
-     result = result + rest[i] + addlabel[i];
+  }
+  addInlineLabel(reg,fullreg,content,label){
+    let result = '', addlabel = [], rest = [];
+    const match = content.match(reg);
+    // console.log(reg, reg instanceof RegExp);
+    //debugger;
+    for(let i=0;i<=match.length-1;i++){
+      reg.lastIndex = 0;
+      let labelplus = '<' + label + '>' + reg.exec(match[i])[1] + '</' + label + '>';
+      addlabel.push(labelplus);
     }
-    console.log(result)
+    rest = content.split(fullreg);
+    result = this.getConnect(addlabel,rest);
     return result;
   }
-
-
-
+  getConnect(addlabel,rest){
+    let result = '';
+    addlabel.push('');
+    for(let i=0;i<=rest.length-1;i++){
+      result = result + rest[i] + addlabel[i];
+    }
+    return result;
+  }
   getArray(){
     return this.markdown.split("\n");
   }
+
 }

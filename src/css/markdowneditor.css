@@ -19,6 +19,7 @@ body{
   background-color: #fff;
   outline:none;
   float: left;
+  overflow-y: auto;
 }
 
 
@@ -27,6 +28,17 @@ body{
   height: 95vh;
   background-color: #f3f3f3;
   float: left;
+  overflow-y: auto;
 }
 
+blockquote{
+  color: #222222;
+  padding-left: 1em;
+  border-left: 5px solid #2c2c2c;
+  background-color: #dddddd;
+}
 
+code{
+  font-family: Roboto Mono,Lucida Sans Typewriter,Lucida Console,monaco,Courrier;
+  background-color: #dddddd;
+}

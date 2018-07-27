@@ -34,15 +34,16 @@
   //   preview.innerHTML = html;
   //   console.log(markdownArr);
   // }
-  const editor = document.getElementById('editor').innerText;
 
-  let preview = document.getElementById('preview').innerHTML;
-  let render = new Render(editor);
 
-  document.addEventListener('keypress', (e) => {
+  document.addEventListener('keyup', (e) => {
     e = e || window.event;
     if(e.key = '13'){
-      preview = render.render().join('');
+      const editor = document.getElementById('editor').innerText;
+      let preview = document.getElementById('preview');
+      let render = new Render(editor);
+      preview.innerHTML = render.render().join('');
+      // console.log(preview.innerHTML)
     }
   });
   // function header(mdtext) {
