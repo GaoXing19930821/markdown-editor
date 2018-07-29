@@ -42,3 +42,8 @@ code{
   font-family: Roboto Mono,Lucida Sans Typewriter,Lucida Console,monaco,Courrier;
   background-color: #dddddd;
 }
+
+pre{
+  padding-left:1em;
+  background-color: #eeeeee;
+}

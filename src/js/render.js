@@ -1,14 +1,14 @@
 const filter = {
     bold : /(?:\*|_){2}(.+?)(?:\*|_){2}/g,
-    italic: /(?:\*|_){1}(.+?)(?:\*|_){1}/g,
+    italic: /(?:\*|_){1}([^\*]+?)(?:\*|_){1}/g,
     bolditalic: /()/g ,
     code: /(?:`)([^`]+)(?:`)/g,
-    image: /(?:!\[(.+?)*\])(?:\((.+?)*("(.+?)")\))/g,
+    image: /(?:!\[(.+?)*\])(?:\((.+?)*("(.+?)")\))/,
     link: /(?:\[(.+?)\])(?:\((.+?)\))/g,
     deleteline: /(?:~~)(.+?)(?:~~)/g,
     header: /^(#{1,6})\s(.+)/,
     quote: /^(>)\s(.+)/,
-    blockcode: /^`{3}(.+)*/g,
+    blockcode: /^`{3}(.+)*/,
 
 };
 
@@ -27,9 +27,9 @@ class Render{
   constructor(markdown){
     this.markdown = markdown;
     this.markdownArr = this.getArray();
-    this.inline = this.inlinerender();
+    this.inline = this.inlineRender();
   }
-  inlinerender(){
+  inlineRender(){
     let output = [] , content, href, blod, italtic, code, deleteline;
 
     const mdArr = this.markdownArr;
@@ -54,7 +54,7 @@ class Render{
     //console.log(this.markdownArr);
     let output = [] ,content;
     const inlineArr = this.inline;
-    for(let i=0;i<inlineArr.length;i++){
+    for(let i=0;i<inlineArr.length-1;i++){
       if(filter.header.test(inlineArr[i])){
         filter.header.lastIndex = 0;
         let hlevel = filter.header.exec(inlineArr[i])[1].length;
@@ -72,22 +72,24 @@ class Render{
         }
         content = '<blockquote><p>' + text + '</p></blockquote>';
       }
-      // else if(filter.blockcode.test(inlineArr[i])) {
-      //   let blockcode = [], language, text = '';
-      //   blockcode.push(inlineArr[i]);
-      //   i++;
-      //   while (!filter.blockcode.test(inlineArr[i])){
-      //     blockcode.push(inlineArr[i]);
-      //     i++;
-      //   }
-      //   console.log(blockcode);
-      //   // if(language = filter.blockcode.exec(blockcode[0])[1])
-      //   // language = filter.blockcode.exec(blockcode[0])[1];
-      //   for (let i = 1; i <= blockcode.length - 2; i++) {
-      //     text = text + blockcode[i] + '\n';
-      //   }
-      //   content = '<pre class="hljs language-' + '"><code>' + text + '</code></pre>';
-      // }
+      else if(filter.blockcode.test(inlineArr[i])) {
+        let blockcode = [], language, text = '';
+        blockcode.push(inlineArr[i]);
+        i++;
+        while(inlineArr.length >= i){
+          blockcode.push(inlineArr[i]);
+          if(inlineArr[i] == '```')
+            break;
+          i++;
+        }
+        i++;
+        if(language = filter.blockcode.exec(blockcode[0])[1])
+        language = filter.blockcode.exec(blockcode[0])[1];
+        for (let i = 1; i <= blockcode.length - 2; i++) {
+          text = text + blockcode[i] + '\n';
+        }
+        content = '<pre class="hljs language-' + language + '"><code>' + text + '</code></pre>';
+      }
       else{
         content = '<p>' + inlineArr[i] + '</p>'
       }
@@ -96,6 +98,7 @@ class Render{
     console.log(output);
     return output;
   }
+
   getItalic(text){
     if(filter.italic.test(text)){
       return this.addInlineLabel(filter.italic,fullfilter.italic,text,'em');
