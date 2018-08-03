@@ -30,7 +30,7 @@ class Render{
     this.inline = this.inlineRender();
   }
   inlineRender(){
-    let output = [] , content, href, blod, italtic, code, deleteline;
+    let output = [] , content, href, blod, italtic, code, deleteline, img;
 
     const mdArr = this.markdownArr;
     //console.log(mdArr);
@@ -41,7 +41,8 @@ class Render{
         italtic = this.getItalic(blod);
         code = this.getCode(italtic);
         deleteline = this.getDeleteLine(code);
-        content = deleteline;
+        img = this.getImage(deleteline);
+        content = img;
       }
       else{
         content = mdArr[i];
