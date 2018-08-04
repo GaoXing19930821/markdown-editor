@@ -1,3 +1,5 @@
+
+
 const filter = {
     bold : /(?:\*|_){2}(.+?)(?:\*|_){2}/g,
     italic: /(?:\*|_){1}([^\*]+?)(?:\*|_){1}/g,
@@ -21,7 +23,16 @@ const fullfilter = {
 
 }
 
-
+document.addEventListener('keyup', (e) => {
+    e = e || window.event;
+    if(e.key = '13'){
+        const editor = document.getElementById('editor').innerText;
+        let preview = document.getElementById('preview');
+        let render = new Render(editor);
+        preview.innerHTML = render.render().join('');
+        // console.log(preview.innerHTML)
+    }
+});
 
 class Render{
   constructor(markdown){

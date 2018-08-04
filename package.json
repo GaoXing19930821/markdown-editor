@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack --mode development",
+    "dev": "webpack-dev-server --mode development"
   },
   "repository": {
     "type": "git",
@@ -21,5 +22,11 @@
     "webpack": "^4.16.4",
     "webpack-cli": "^3.1.0",
     "webpack-command": "^0.4.1"
+  },
+  "dependencies": {
+    "css-loader": "^1.0.0",
+    "open-browser-webpack-plugin": "0.0.5",
+    "style-loader": "^0.21.0",
+    "webpack-dev-server": "^3.1.5"
   }
 }
