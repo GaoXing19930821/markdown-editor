@@ -2,14 +2,12 @@ const webpack = require('webpack');
 const path = require('path');
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
-module.exports = {//注意这里是exports不是export
-    entry: {
-        render: __dirname + "/src/js/render.js",
-        style: __dirname + "/src/css/markdowneditor.css"
-    },
-    output: {//输出目录
-        path: path.resolve(__dirname ,'build'),//打包后的js文件存放的地方
-        filename: 'bundle.js'//打包后输出的js的文件名
+module.exports = {
+    entry: __dirname + "/src/js/render.js",
+        // style: __dirname + "/src/css/markdowneditor.css,
+    output: {
+        path: path.resolve(__dirname ,'build'),
+        filename: 'bundle.js'
     },
     module: {
         rules:[
@@ -22,6 +20,7 @@ module.exports = {//注意这里是exports不是export
             },
         ]
     },
+    mode: 'development',
     devServer: {
         contentBase: './build',
         historyApiFallback: true,
@@ -29,7 +28,7 @@ module.exports = {//注意这里是exports不是export
         port: 8080
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
+        // new webpack.HotModuleReplacementPlugin(),
         new OpenBrowserPlugin({
             url: 'http://localhost:8080'
         })

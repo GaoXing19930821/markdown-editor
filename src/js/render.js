@@ -1,5 +1,4 @@
-
-
+import '../css/markdowneditor.css';
 const filter = {
     bold : /(?:\*|_){2}(.+?)(?:\*|_){2}/g,
     italic: /(?:\*|_){1}([^\*]+?)(?:\*|_){1}/g,
@@ -23,15 +22,11 @@ const fullfilter = {
 
 }
 
-document.addEventListener('keyup', (e) => {
-    e = e || window.event;
-    if(e.key = '13'){
-        const editor = document.getElementById('editor').innerText;
-        let preview = document.getElementById('preview');
-        let render = new Render(editor);
-        preview.innerHTML = render.render().join('');
-        // console.log(preview.innerHTML)
-    }
+document.addEventListener('keyup', () => {
+    const editor = document.getElementById('editor').innerText;
+    let preview = document.getElementById('preview');
+    let render = new Render(editor);
+    preview.innerHTML = render.render().join('');
 });
 
 class Render{
@@ -41,23 +36,25 @@ class Render{
     this.inline = this.inlineRender();
   }
   inlineRender(){
-    let output = [] , content, href, blod, italtic, code, deleteline, img;
+    let output = [] , content, href, blod, italtic, code, deleteline;
 
     const mdArr = this.markdownArr;
     //console.log(mdArr);
     for(let i=0;i<=mdArr.length-1;i++){
-      if(filter.bold.test(mdArr[i])||filter.italic.test(mdArr[i])||
-        filter.code.test(mdArr[i])||filter.deleteline.test(mdArr[i])){
+      if(filter.bold.test(mdArr[i])||filter.italic.test(mdArr[i])
+          ||filter.code.test(mdArr[i])||filter.deleteline.test(mdArr[i]))
+      {
         blod = this.getBold(mdArr[i]);
         italtic = this.getItalic(blod);
         code = this.getCode(italtic);
         deleteline = this.getDeleteLine(code);
-        img = this.getImage(deleteline);
-        content = img;
+        // img = this.getImage(deleteline);
+        content = deleteline;
       }
       else{
         content = mdArr[i];
       }
+      // console.log(content)
       output.push(content);
     }
     return output;
@@ -181,5 +178,5 @@ class Render{
   getArray(){
     return this.markdown.split("\n");
   }
-
 }
+
